@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="焼肉きんぐ">
+    <title>焼肉きんぐ 公式アプリ</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #e60012;
+            --dark-red: #9e000c;
+            --gold-gradient: linear-gradient(135deg, #f1d37f 0%, #d4af37 50%, #aa8214 100%);
+            --silver-gradient: linear-gradient(135deg, #f0f0f0 0%, #dcdcdc 50%, #aaaaaa 100%);
+            --bg-black: #121212;
+            --card-gray: #1f1f1f;
+            --text-white: #ffffff;
+            --text-dark: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK JP", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            overflow-x: hidden;
+            padding-bottom: calc(75px + env(safe-area-inset-bottom));
+            padding-top: 60px;
+        }
+
+        /* Fixed Top Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #ffffff;
+            color: #000000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 2000;
+            border-bottom: 1px solid #e0e0e0;
+            padding-top: env(safe-area-inset-top);
+            height: calc(60px + env(safe-area-inset-top));
+        }
+
+        .header-left {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .header-left i {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: calc(8px + env(safe-area-inset-top));
+            right: -10px;
+            background: var(--primary-red);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 2px 6px;
+            transform: scale(0.85);
+        }
+
+        .header-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-logo .logo-top {
+            font-size: 9px;
+            font-weight: bold;
+            color: var(--primary-red);
+            letter-spacing: 1px;
+            margin-bottom: -2px;
+        }
+
+        .header-logo .logo-main {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: #000000;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo .logo-main span {
+            background: #000;
+            color: #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            margin-right: 4px;
+            font-weight: bold;
+        }
+
+        .header-right i {
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Main Container Pages */
+        .app-page {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .app-page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- PAGE: HOME --- */
+        .home-container {
+            background: #000000;
+            background-image: linear-gradient(rgba(20,20,20,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(20,20,20,0.8) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .banner-carousel {
+            width: 100%;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            display: flex;
+            scrollbar-width: none;
+        }
+        .banner-carousel::-webkit-scrollbar { display: none; }
+
+        .banner-item {
+            min-width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        .banner-item img, .custom-banner {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hawaii-banner {
+            background: linear-gradient(135deg, #005c97, #363795);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            border-bottom: 3px solid #000;
+        }
+        .hawaii-banner h2 { font-size: 26px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-style: italic;}
+        .hawaii-banner p { font-size: 13px; color: #ffeb3b; margin-top: 8px; font-weight: bold; }
+
+        .lottery-banner {
+            background: linear-gradient(135deg, #b70914, #ec1c24);
+            border: 4px solid #d4af37;
+            margin: 10px;
+            border-radius: 8px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        .lottery-banner h3 { font-size: 20px; color: #fff; font-weight: 900; letter-spacing: 1px; text-shadow: 1px 1px 2px #000; }
+        .lottery-banner .action-lbl { background: #fff; color: var(--primary-red); padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; margin-top: 8px; border: 1px solid #d4af37; }
+
+        .stamp-banner {
+            background: linear-gradient(90deg, #ff758c 0%, #ff7eb3 100%);
+            margin: 0 10px 10px 10px;
+            border-radius: 8px;
+            height: 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        /* Rank Progress Section */
+        .rank-status-card {
+            background: linear-gradient(135deg, #2c2a29 0%, #1a1817 100%);
+            border: 1px solid #443e3c;
+            border-radius: 12px;
+            margin: 12px;
+            padding: 16px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .rank-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rank-text-main {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .rank-text-main span {
+            font-size: 24px;
+            color: #f1d37f;
+            font-weight: 900;
+            margin: 0 4px;
+        }
+
+        .rank-badge-img {
+            width: 60px;
+            height: 60px;
+            background: var(--gold-gradient);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .rank-badge-img i {
+            font-size: 28px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        /* Action Menu Buttons */
+        .menu-action-btn {
+            margin: 10px 12px;
+            padding: 14px 16px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .menu-action-btn:active { opacity: 0.8; }
+
+        .btn-gold {
+            background: transparent;
+            border: 2px solid #d4af37;
+            color: #f1d37f;
+        }
+        .btn-blue {
+            background: transparent;
+            border: 2px solid #4a90e2;
+            color: #79b0ec;
+        }
+
+        /* Section Header Divider */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0 10px 0;
+            background: #1a1a1a;
+            padding: 8px 0;
+            border-top: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
+        }
+        .section-divider h4 {
+            font-size: 13px;
+            font-weight: 900;
+            color: #d4af37;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Store List Element */
+        .store-row {
+            background: linear-gradient(180deg, #ffffff 0%, #e5e5e5 100%);
+            color: #000000;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #b5b5b5;
+        }
+        .store-row:last-child { border-bottom: none; }
+        
+        .store-name-side {
+            display: flex;
+            flex-direction: column;
+        }
+        .store-title-txt {
+            font-weight: 800;
+            font-size: 15px;
+        }
+        .store-distance-lbl {
+            font-size: 12px;
+            color: #555555;
+            margin-top: 2px;
+            font-weight: bold;
+        }
+        .store-reserve-pill {
+            background: var(--primary-red);
+            color: #ffffff;
+            font-weight: 800;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        /* --- PAGE: COUPON --- */
+        .coupon-top-bar {
+            background: #ffffff;
+            color: #000000;
+            text-align: center;
+            font-weight: 900;
+            font-size: 17px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .promo-input-container {
+            padding: 16px;
+            background: #fdfdfd;
+        }
+        .promo-pill-box {
+            border: 1.5px solid var(--primary-red);
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 14px;
+            font-weight: bold;
+            background: #fff;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .promo-pill-box i { margin-right: 8px; color: var(--primary-red); font-size: 16px; }
+
+        .conditions-banner {
+            background: var(--dark-red);
+            color: #ffffff;
+            padding: 12px 16px;
+        }
+        .conditions-banner h5 { font-size: 13px; font-weight: 900; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .conditions-banner p { font-size: 11px; line-height: 1.5; font-weight: bold; opacity: 0.95; }
+
+        .coupon-list-scroll {
+            padding: 12px;
+            background: #f4f4f4;
+            min-height: 80vh;
+        }
+
+        /* Coupon Card Core Component */
+        .coupon-card-item {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            overflow: hidden;
+            color: #000000;
+        }
+
+        .coupon-visual-header {
+            padding: 20px;
+            color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .visual-blue { background: linear-gradient(135deg, #7fa9cf 0%, #5282b2 100%); }
+        .visual-magenta { background: linear-gradient(135deg, #ec407a 0%, #b4004e 100%); }
+
+        .coupon-dept-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; opacity: 0.9; }
+        .coupon-main-badge-txt { font-size: 24px; font-weight: 900; margin-top: 4px; letter-spacing: 0.5px; }
+        .coupon-main-badge-txt span { font-size: 34px; color: #fff; margin-left: 4px; }
+
+        .coupon-body-details {
+            padding: 16px;
+        }
+        .coupon-item-name { font-size: 16px; font-weight: 800; color: #111; margin-bottom: 12px; }
+        
+        .coupon-action-trigger {
+            background: var(--primary-red);
+            color: #ffffff;
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 12px 0;
+            border-radius: 25px;
+            width: 85%;
+            margin: 0 auto 12px auto;
+            box-shadow: 0 3px 6px rgba(230,0,18,0.3);
+            cursor: pointer;
+        }
+        .coupon-action-trigger:active { background: var(--dark-red); }
+
+        .coupon-expiry-lbl {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #333333;
+            margin-bottom: 14px;
+        }
+
+        .coupon-notes-toggle {
+            border-top: 1px dashed #dddddd;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 900;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .coupon-hidden-notes {
+            font-size: 11px;
+            color: #555555;
+            line-height: 1.6;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* --- PAGE: POLICE ACTIVE BARCODE --- */
+        .police-detail-screen {
+            background: #000000;
+            background-image: repeating-linear-gradient(45deg, #151515 0px, #151515 2px, transparent 2px, transparent 10px);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .police-header-logo-zone {
+            text-align: center;
+            padding: 15px 0;
+        }
+        .police-header-logo-zone h2 {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .barcode-main-card {
+            background: #ffffff;
+            color: #000000;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            margin-bottom: 16px;
+        }
+        .barcode-instruction-txt { font-size: 11px; font-weight: 800; color: #444; margin-bottom: 12px; }
+        
+        /* Realistic CSS Barcode component */
+        .css-barcode-graphic {
+            display: inline-flex;
+            align-items: stretch;
+            height: 65px;
+            background: #fff;
+            padding: 0 10px;
+            margin: 5px 0;
+        }
+        .barcode-line { background: #000; margin-right: 1px; width: 2px; }
+        .barcode-line.w-1 { width: 1px; }
+        .barcode-line.w-3 { width: 3px; }
+        .barcode-line.w-4 { width: 4px; }
+        .barcode-line.space-sm { margin-right: 3px; }
+        .barcode-line.space-md { margin-right: 5px; }
+
+        .barcode-numerical-string { font-size: 13px; font-weight: 700; color: #000; margin-top: 6px; letter-spacing: 1px; }
+
+        /* Metallic Rank Badge Card Component */
+        .metallic-rank-display-card {
+            background: var(--silver-gradient);
+            border-radius: 12px;
+            padding: 20px;
+            color: #000000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            text-align: center;
+            border: 2px solid #ffffff;
+            margin-bottom: 16px;
+        }
+        .metallic-card-dept { font-size: 11px; font-weight: bold; letter-spacing: 0.5px; opacity: 0.8; }
+        .metallic-card-rank { font-size: 24px; font-weight: 900; margin: 6px 0; letter-spacing: 1px; }
+        .metallic-card-pct { font-size: 42px; font-weight: 900; font-style: italic; border-top: 1px solid rgba(0,0,0,0.15); padding-top: 6px; }
+        .metallic-card-pct span { font-size: 20px; margin-left: 2px; }
+
+        .timer-countdown-pill {
+            background: #ffffff;
+            color: #000000;
+            border-radius: 4px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .timer-countdown-pill i { color: #555; margin-right: 8px; font-size: 16px; }
+        .timer-countdown-pill .time-digits { font-size: 16px; margin-left: 10px; font-weight: 900; letter-spacing: 0.5px; }
+
+        .police-footer-warning-box {
+            background: rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 14px;
+            border-left: 4px solid var(--primary-red);
+        }
+        .police-footer-warning-box p { font-size: 12px; color: #ff8a80; font-weight: bold; line-height: 1.6; }
+
+        /* --- PAGE: RESERVATIONS --- */
+        .res-top-tab-switcher {
+            display: flex;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .res-tab-option {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            font-size: 14px;
+            font-weight: 900;
+            color: #888888;
+            cursor: pointer;
+            position: relative;
+        }
+        .res-tab-option.active {
+            color: #ffffff;
+            background: var(--primary-red);
+        }
+
+        .res-empty-container {
+            padding: 40px 24px;
+            text-align: center;
+            background: #fdfdfd;
+            color: #333;
+            min-height: 60vh;
+        }
+        .res-empty-container p { font-size: 13px; line-height: 1.7; font-weight: bold; margin-bottom: 16px; }
+        .res-empty-container a { color: #4a90e2; text-decoration: none; font-weight: bold; }
+
+        .res-history-container {
+            background: #f4f4f4;
+            padding: 12px;
+            min-height: 85vh;
+        }
+        .history-card-item {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            color: #000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .history-timestamp-lbl { font-size: 12px; color: #666; font-weight: bold; margin-bottom: 4px; }
+        .history-store-title-name { font-size: 17px; font-weight: 900; margin-bottom: 10px; }
+        
+        .history-schedule-meta-box {
+            background: #fffdf3;
+            border: 1px solid #ebdcb2;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 12px;
+        }
+
+        .history-action-row-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .history-btn-node {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .btn-node-disabled { background: #e0e0e0; color: #aaaaaa; cursor: not-allowed; }
+        .btn-node-danger { background: var(--primary-red); color: #fff; box-shadow: 0 2px 4px rgba(230,0,18,0.2); }
+
+        /* --- PAGE: STORE SEARCH MAP --- */
+        .search-input-wrapper-box {
+            padding: 12px;
+            background: #f5f5f5;
+        }
+        .search-inner-field-box {
+            background: #ffffff;
+            border: 1.5px solid #333333;
+            border-radius: 4px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+        .search-inner-field-box i { color: #666; margin-right: 10px; font-size: 16px; }
+        .search-inner-field-box input { border: none; width: 100%; font-size: 13px; font-weight: bold; outline: none; color: #000; }
+
+        .floating-nearby-trigger-btn {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            margin: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            cursor: pointer;
+        }
+
+        .mock-google-maps-view {
+            width: 100%;
+            height: 280px;
+            background: #aad3df;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid #ddd;
+        }
+
+        /* Pure CSS custom stylized map element markers */
+        .map-pin-marker {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--primary-red);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            box-shadow: -1px 2px 4px rgba(0,0,0,0.3);
+        }
+        .map-pin-marker::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            position: absolute;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+        }
+
+        /* --- FIXED BOTTOM TAB NAVIGATION BAR --- */
+        .fixed-bottom-navigation-tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: #ffffff;
+            border-top: 1px solid #dddddd;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 3000;
+            padding-bottom: env(safe-area-inset-bottom);
+            height: calc(65px + env(safe-area-inset-bottom));
+        }
+
+        .nav-item-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 20%;
+            height: 100%;
+            color: #666666;
+            font-size: 9px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+
+        .nav-item-node i {
+            font-size: 21px;
+            margin-bottom: 2px;
+        }
+
+        .nav-item-node.active-route {
+            color: var(--primary-red);
+        }
+
+        /* Central Floating Shield Button Badge component */
+        .central-badge-anchor-point {
+            width: 20%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .floating-police-badge-trigger {
+            position: absolute;
+            bottom: calc(12px + env(safe-area-inset-bottom));
+            width: 72px;
+            height: 76px;
+            background: var(--gold-gradient);
+            border-radius: 12px 12px 40px 40px;
+            border: 2px solid #292524;
+            box-shadow: 0 -3px 12px rgba(0,0,0,0.35);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 900;
+            z-index: 3500;
+            cursor: pointer;
+        }
+
+        .floating-police-badge-trigger i {
+            font-size: 26px;
+            color: #ffffff;
+            margin-bottom: 2px;
+            text-shadow: 0 1.5px 3px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP GLOBAL APP HEADER -->
+    <header>
+        <div class="header-left">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-badge">39</span>
+        </div>
+        <div class="header-logo">
+            <div class="logo-top">お席で注文 食べ放題</div>
+            <div class="logo-main"><span>肉</span>焼肉きんぐ</div>
+        </div>
+        <div class="header-right">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </header>
+
+    <!-- TAB PAGE 1: HOME SCREEN -->
+    <div id="route-home" class="app-page active">
+        <div class="home-container">
+            <!-- Continuous Smooth Custom Carousel Content -->
+            <div class="banner-carousel">
+                <div class="banner-item">
+                    <div class="custom-banner hawaii-banner">
+                        <h2>Yakiniku King<br>🌴 Hawaii Fair 🌴</h2>
+                        <p>ハワイフェア開催記念スタンプカード公開中！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Double Feature Campaign Display Promos -->
+            <div class="lottery-banner">
+                <h3>新グランドメニュー記念</h3>
+                <h3>きんぐの大抽選会</h3>
+                <div class="action-lbl">獲得した抽選券を見る！ &gt;</div>
+            </div>
+
+            <div class="rank-status-card">
+                <div class="rank-flex">
+                    <div class="rank-text-main">
+                        あと <span>1</span> 回ご来店で<br>
+                        階級UP! <span style="font-size:12px; color:#aaa; font-weight:normal;">&gt; ポリス手帳を見る</span>
+                    </div>
+                    <div class="rank-badge-img">
+                        <i class="fa-solid fa-building-shield"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast Action Access Pills -->
+            <div class="menu-action-btn btn-gold">
+                <span><i class="fa-solid fa-gift" style="margin-right:8px;"></i> 交換可能なアイテムがあります</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+            <div class="menu-action-btn btn-blue">
+                <span><i class="fa-solid fa-ticket" style="margin-right:8px;"></i> 利用可能なクーポンがあります</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+
+            <!-- Favorite Stores Segments -->
+            <div class="section-divider">
+                <h4>お気に入り店舗</h4>
+            </div>
+            <div class="store-row">
+                <div class="store-name-side">
+                    <span class="store-title-txt">若松大鳥居店</span>
+                </div>
+                <div class="store-reserve-pill" onclick="switchRoute('reserve')">予約</div>
+            </div>
+            <div class="store-row">
+                <div class="store-name-side">
+                    <span class="store-title-txt">中目黒店</span>
+                </div>
+                <div class="store-reserve-pill" onclick="switchRoute('reserve')">予約</div>
+            </div>
+            <div class="store-row">
+                <div class="store-name-side">
+                    <span class="store-title-txt">新宿西口大ガード店</span>
+                </div>
+                <div class="store-reserve-pill" onclick="switchRoute('reserve')">予約</div>
+            </div>
+
+            <!-- Nearby Stores Segments -->
+            <div class="section-divider">
+                <h4>近隣の店舗</h4>
+            </div>
+            <div class="store-row">
+                <div class="store-name-side">
+                    <span class="store-title-txt">若松大鳥居店</span>
+                    <span class="store-distance-lbl">1.4km</span>
+                </div>
+                <div class="store-reserve-pill" onclick="switchRoute('reserve')">予約</div>
+            </div>
+            <div class="store-row">
+                <div class="store-name-side">
+                    <span class="store-title-txt">八幡西店</span>
+                    <span class="store-distance-lbl">4.5km</span>
+                </div>
+                <div class="store-reserve-pill" onclick="switchRoute('reserve')">予約</div>
+            </div>
+            <div class="store-row">
+                <div class="store-name-side">
+                    <span class="store-title-txt">北九州黒崎店</span>
+                    <span class="store-distance-lbl">5.9km</span>
+                </div>
+                <div class="store-reserve-pill" onclick="switchRoute('reserve')">予約</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB PAGE 2: COUPON SCREEN -->
+    <div id="route-coupon" class="app-page">
+        <div class="coupon-top-bar">クーポン</div>
+        
+        <div class="promo-input-container">
+            <div class="promo-pill-box">
+                <i class="fa-solid fa-money-check"></i> クーポンコードを入力する
+            </div>
+        </div>
+
+        <div class="conditions-banner">
+            <h5>クーポン利用条件</h5>
+            <p>※クーポンは1会計につき1枚ご利用いただけます<br>
+               ※個別会計での複数枚利用はできません<br>
+               ※クーポン利用後は2時間、一部を除きほかのクーポンをご利用いただけません</p>
+        </div>
+
+        <div class="coupon-list-scroll">
+            <!-- Coupon Card 1 -->
+            <div class="coupon-card-item">
+                <div class="coupon-visual-header visual-blue">
+                    <div class="coupon-dept-title">YAKINIKU KING POLICE DEPARTMENT</div>
+                    <div class="coupon-main-badge-txt">YKPD 巡査長 <span style="font-size:16px;">ソフトドリンク飲み放題</span><span>半額</span></div>
+                </div>
+                <div class="coupon-body-details">
+                    <div class="coupon-item-name">巡査長 ソフトドリンク半額</div>
+                    <div class="coupon-action-trigger" onclick="switchRoute('police')">クーポンを使う</div>
+                    <div class="coupon-expiry-lbl">2026年11月12日(木)23:59まで有効</div>
+                    <div class="coupon-notes-toggle" onclick="toggleNotes(this)">
+                        <span>注意事項</span><span style="color:#666;">詳細 <i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
+                    <div class="coupon-hidden-notes" style="display:none;">
+                        ※ランチタイムではご利用いただけません<br>
+                        ※食べ放題コースのみご利用いただけます<br>
+                        ※グループ全員対象となります（小学生は対象外）
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coupon Card 2 -->
+            <div class="coupon-card-item">
+                <div class="coupon-visual-header visual-magenta">
+                    <div class="coupon-dept-title">焼肉きんぐ生誕記念</div>
+                    <div class="coupon-main-badge-txt">お誕生日特別クーポン<span>10%割引</span></div>
+                </div>
+                <div class="coupon-body-details">
+                    <div class="coupon-item-name">お誕生日特別クーポン</div>
+                    <div class="coupon-action-trigger" onclick="switchRoute('police')">クーポンを使う</div>
+                    <div class="coupon-expiry-lbl">2026年08月02日(日)23:59まで有効</div>
+                    <div class="coupon-notes-toggle" onclick="toggleNotes(this)">
+                        <span>注意事項</span><span style="color:#666;">詳細 <i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
+                    <div class="coupon-hidden-notes" style="display:none;">
+                        ※本券は1組様1回1枚ご利用いただけます<br>
+                        ※他の割引券・特典との併用はできません
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB PAGE 3: CENTRAL HIGH-FIDELITY ACTIVE POLICE BADGE ACCESSIBILITY -->
+    <div id="route-police" class="app-page">
+        <div class="police-detail-screen">
+            <div class="police-header-logo-zone">
+                <h2>POLICE 手帳</h2>
+            </div>
+
+            <div class="barcode-main-card">
+                <div class="barcode-instruction-txt">お会計時に会員バーコードを提示してください</div>
+                
+                <!-- Stylized Rendered Perfect Barcode Graphic Component -->
+                <div class="css-barcode-graphic">
+                    <div class="barcode-line w-3"></div><div class="barcode-line w-1"></div><div class="barcode-line w-4 space-sm"></div>
+                    <div class="barcode-line w-2"></div><div class="barcode-line w-3 space-md"></div><div class="barcode-line w-1"></div>
+                    <div class="barcode-line w-4"></div><div class="barcode-line w-2 space-sm"></div><div class="barcode-line w-3"></div>
+                    <div class="barcode-line w-1"></div><div class="barcode-line w-4 space-md"></div><div class="barcode-line w-2"></div>
+                    <div class="barcode-line w-3"></div><div class="barcode-line w-1 space-sm"></div><div class="barcode-line w-4"></div>
+                    <div class="barcode-line w-2"></div><div class="barcode-line w-3 space-md"></div><div class="barcode-line w-4"></div>
+                </div>
+                <div class="barcode-numerical-string">0047-5368-2001</div>
+            </div>
+
+            <div class="metallic-rank-display-card">
+                <div class="metallic-card-dept">YAKINIKU KING POLICE DEPARTMENT</div>
+                <div class="metallic-card-rank">👑 YKPD 警視監</div>
+                <div class="metallic-card-pct">50<span>%OFF</span></div>
+                <div style="font-size:11px; font-weight:bold; margin-top:8px; opacity:0.7;">税込会計総額より割引</div>
+            </div>
+
+            <div class="timer-countdown-pill">
+                <i class="fa-regular fa-clock"></i> 残り時間 <span class="time-digits" id="live-timer-digits">22:25:50</span>
+            </div>
+
+            <div class="police-footer-warning-box">
+                <p>※有人レジのみでご利用いただけます<br>
+                   ※クーポン画面をスタッフにご提示ください</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB PAGE 4: RESERVATION SYSTEM AND TRACKING -->
+    <div id="route-reserve" class="app-page">
+        <div class="res-top-tab-switcher">
+            <div class="res-tab-option" onclick="toggleResSubTab('now', this)">予約状況</div>
+            <div class="res-tab-option active" onclick="toggleResSubTab('history', this)">来店履歴</div>
+        </div>
+
+        <div id="res-sub-now" style="display:none;" class="res-empty-container">
+            <p>現在アプリからの予約はございません。<br><br>
+               ご予約が表示されない場合は画面リロードをお試しください。<br>下方向にスワイプにてご利用いただけます。</p>
+            <p style="font-size:12px; color:#666;">※EPARKサイトでの予約は、<a href="#">EPARKのマイページ</a>にてご確認ください。</p>
+        </div>
+
+        <div id="res-sub-history" class="res-history-container">
+            <div class="history-card-item">
+                <div class="history-timestamp-lbl">2026/05/27 18:02</div>
+                <div class="history-store-title-name">若松大鳥居店</div>
+                <div class="history-schedule-meta-box">
+                    平日営業時間: 17:00 - 23:00 (最終入店 22:00)<br>
+                    休日営業時間: 11:00 - 23:00 (最終入店 22:00)
+                </div>
+                <div class="history-action-row-buttons">
+                    <div class="history-btn-node btn-node-disabled">順番待ち受付</div>
+                    <div class="history-btn-node btn-node-danger">優先案内予約</div>
+                </div>
+            </div>
+
+            <div class="history-card-item">
+                <div class="history-timestamp-lbl">2026/04/10 21:09</div>
+                <div class="history-store-title-name">若松大鳥居店</div>
+                <div class="history-schedule-meta-box">
+                    平日営業時間: 17:00 - 23:00 (最終入店 22:00)<br>
+                    休日営業時間: 11:00 - 23:00 (最終入店 22:00)
+                </div>
+                <div class="history-action-row-buttons">
+                    <div class="history-btn-node btn-node-disabled">順番待ち受付</div>
+                    <div class="history-btn-node btn-node-danger">優先案内予約</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB PAGE 5: MAP STORE ROUTER FIELDS -->
+    <div id="route-search" class="app-page">
+        <div class="res-top-tab-switcher">
+            <div class="res-tab-option active">店舗予約</div>
+            <div class="res-tab-option">お気に入り</div>
+        </div>
+
+        <div class="search-input-wrapper-box">
+            <div class="search-inner-field-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="店舗名・住所・都道府県から検索">
+            </div>
+        </div>
+
+        <div class="floating-nearby-trigger-btn">
+            <i class="fa-solid fa-location-crosshairs" style="margin-right:6px;"></i> 近くのお店を表示
+        </div>
+
+        <!-- Stylish High-Fidelity Custom Embedded CSS Map Representation Component -->
+        <div class="mock-google-maps-view">
+            <div style="position:absolute; width:100%; height:100%; background-image: radial-gradient(#c5e1a5 20%, transparent 20%), radial-gradient(#e0f2f1 20%, transparent 20%); background-size: 40px 40px; background-position: 0 0, 20px 20px; opacity:0.4;"></div>
+            <!-- Dynamic map pins matching geolocation points of the screenshots -->
+            <div class="map-pin-marker" style="top: 120px; left: 140px;"></div>
+            <div class="map-pin-marker" style="top: 150px; left: 180px;"></div>
+            <div class="map-pin-marker" style="top: 170px; left: 160px;"></div>
+            <div class="map-pin-marker" style="top: 90px; left: 240px;"></div>
+            <div style="position:absolute; bottom:10px; left:10px; font-weight:900; color:#333; font-size:14px; letter-spacing:0.5px;">Google Maps</div>
+        </div>
+
+        <div class="store-row" style="background:#fff; border-top:1px solid #ccc;">
+            <div class="store-name-side">
+                <span class="store-title-txt">若松大鳥居店 <span style="color:#e60012; font-size:12px; margin-left:6px;">1.4km</span></span>
+                <span class="store-distance-lbl">福岡県北九州市若松区大鳥居...</span>
+            </div>
+            <div class="store-reserve-pill">予約</div>
+        </div>
+    </div>
+
+    <!-- GLOBAL FIXED NAVIGATION ACTION BOTTOM TAB BAR -->
+    <nav class="fixed-bottom-navigation-tab-bar">
+        <div class="nav-item-node active-route" onclick="switchRoute('home', this)">
+            <i class="fa-solid fa-house"></i>ホーム
+        </div>
+        <div class="nav-item-node" onclick="switchRoute('coupon', this)">
+            <i class="fa-solid fa-ticket"></i>クーポン
+        </div>
+        
+        <div class="central-badge-anchor-point" onclick="switchRoute('police', this)">
+            <div class="floating-police-badge-trigger">
+                <i class="fa-solid fa-building-shield"></i>
+                ポリス手帳
+            </div>
+        </div>
+
+        <div class="nav-item-node" onclick="switchRoute('reserve', this)">
+            <i class="fa-regular fa-calendar-check"></i>予約状況
+        </div>
+        <div class="nav-item-node" onclick="switchRoute('search', this)">
+            <i class="fa-solid fa-store"></i>店舗検索
+        </div>
+    </nav>
+
+    <!-- CORE INTERACTION CONTROLLER SCRIPT -->
+    <script>
+        function switchRoute(routeTarget, elementNode) {
+            // Hide all structural route containers
+            document.querySelectorAll('.app-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Render visible the current corresponding route container
+            const activePage = document.getElementById('route-' + routeTarget);
+            if (activePage) {
+                activePage.classList.add('active');
+            }
+
+            // Sync structural selection configuration styling for bottom tab bars
+            document.querySelectorAll('.nav-item-node').forEach(item => {
+                item.classList.remove('active-route');
+            });
+
+            if (elementNode && elementNode.classList.contains('nav-item-node')) {
+                elementNode.classList.add('active-route');
+            } else if (routeTarget === 'police') {
+                // Central badge click edge handling
+                document.querySelectorAll('.nav-item-node').forEach(item => item.classList.remove('active-route'));
+            } else {
+                // Catch quick actions from inside screens mapping to active routes
+                if(routeTarget === 'reserve') document.querySelectorAll('.nav-item-node')[2].classList.add('active-route');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function toggleNotes(element) {
+            const notesBlock = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            if (notesBlock.style.display === 'none') {
+                notesBlock.style.display = 'block';
+                icon.className = 'fa-solid fa-chevron-up';
+            } else {
+                notesBlock.style.display = 'none';
+                icon.className = 'fa-solid fa-chevron-down';
+            }
+        }
+
+        function toggleResSubTab(tabName, element) {
+            document.querySelectorAll('.res-tab-option').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            if (tabName === 'now') {
+                document.getElementById('res-sub-now').style.display = 'block';
+                document.getElementById('res-sub-history').style.display = 'none';
+            } else {
+                document.getElementById('res-sub-now').style.display = 'none';
+                document.getElementById('res-sub-history').style.display = 'block';
+            }
+        }
+
+        // Live Real-Time Ticking Countdown Timer Simulation Loop
+        let hour = 22, min = 25, sec = 50;
+        setInterval(() => {
+            sec--;
+            if (sec < 0) { sec = 59; min--; }
+            if (min < 0) { min = 59; hour--; }
+            if (hour < 0) { hour = 23; } // infinite simulation loop
+            
+            const formatStr = 
+                String(hour).padStart(2, '0') + ':' + 
+                String(min).padStart(2, '0') + ':' + 
+                String(sec).padStart(2, '0');
+                
+            const displayNode = document.getElementById('live-timer-digits');
+            if(displayNode) displayNode.textContent = formatStr;
+        }, 1000);
+    </script>
+</body>
+</html>
